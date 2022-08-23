@@ -3,9 +3,11 @@
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
-	<div class="flex h-full flex-1 items-center justify-center">
+	<div class="flex h-full flex-1 flex-col items-center justify-end gap-4 pb-36">
 		<h2 class="text-2xl font-bold text-zinc-100">Player</h2>
+		<div class="h-24 w-3/4 rounded-xl bg-stone-600"></div>
 	</div>
+
 	<div
 		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
 	>
@@ -33,7 +35,11 @@
 			<div class="bg-stone-800"></div>
 		</div>
 	</div>
-	<div class="flex h-full flex-1 items-center justify-center">
+
+	<div
+		class="flex h-full flex-1 flex-col items-center justify-start gap-4 pt-36"
+	>
+		<div class="h-24 w-3/4 rounded-xl bg-stone-600"></div>
 		<h2 class="text-2xl font-bold text-zinc-100">AI</h2>
 	</div>
 </main>
