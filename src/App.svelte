@@ -1,6 +1,7 @@
 <script lang="ts">
 	import "./app.css";
 	import { random } from "lodash-es";
+	import Dice from "./lib/Dice.svelte";
 
 	let currentDice = random(1, 6);
 
@@ -13,52 +14,7 @@
 		<div
 			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
 		>
-			<div
-				class="grid h-16 w-16 grid-cols-3 grid-rows-3 gap-px rounded-md bg-zinc-200 p-3"
-			>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 4 ||
-						currentDice === 5 ||
-						currentDice === 6}"
-				></div>
-				<div class="h-full w-full rounded-full"></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 3 ||
-						currentDice === 4 ||
-						currentDice === 5 ||
-						currentDice === 6}"
-				></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 2 || currentDice === 6}"
-				></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 1 ||
-						currentDice === 3 ||
-						currentDice === 5}"
-				></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 2 || currentDice === 6}"
-				></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 3 ||
-						currentDice === 4 ||
-						currentDice === 5 ||
-						currentDice === 6}"
-				></div>
-				<div class="h-full w-full rounded-full"></div>
-				<div
-					class="h-full w-full rounded-full"
-					class:bg-stone-800="{currentDice === 4 ||
-						currentDice === 5 ||
-						currentDice === 6}"
-				></div>
-			</div>
+			<Dice value="{currentDice}" />
 		</div>
 	</div>
 
