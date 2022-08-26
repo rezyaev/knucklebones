@@ -1,11 +1,65 @@
 <script lang="ts">
 	import "./app.css";
+	import { random } from "lodash-es";
+
+	let currentDice = random(1, 6);
+
+	console.log({ currentDice });
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
 	<div class="flex h-full flex-1 flex-col items-center justify-end gap-4 pb-36">
 		<h2 class="text-2xl font-bold text-zinc-100">Player</h2>
-		<div class="h-24 w-3/4 rounded-xl bg-stone-600"></div>
+		<div
+			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
+		>
+			<div
+				class="grid h-16 w-16 grid-cols-3 grid-rows-3 gap-px rounded-md bg-zinc-200 p-3"
+			>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 4 ||
+						currentDice === 5 ||
+						currentDice === 6}"
+				></div>
+				<div class="h-full w-full rounded-full"></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 3 ||
+						currentDice === 4 ||
+						currentDice === 5 ||
+						currentDice === 6}"
+				></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 2 || currentDice === 6}"
+				></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 1 ||
+						currentDice === 3 ||
+						currentDice === 5}"
+				></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 2 || currentDice === 6}"
+				></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 3 ||
+						currentDice === 4 ||
+						currentDice === 5 ||
+						currentDice === 6}"
+				></div>
+				<div class="h-full w-full rounded-full"></div>
+				<div
+					class="h-full w-full rounded-full"
+					class:bg-stone-800="{currentDice === 4 ||
+						currentDice === 5 ||
+						currentDice === 6}"
+				></div>
+			</div>
+		</div>
 	</div>
 
 	<div
