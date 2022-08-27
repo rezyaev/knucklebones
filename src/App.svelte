@@ -14,7 +14,10 @@
 		currentDice = random(1, 6);
 	}
 
-	console.log({ currentDice });
+	$: {
+		console.log("[App State Updated]");
+		console.log({ currentDice, cells });
+	}
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
