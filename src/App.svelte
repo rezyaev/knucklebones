@@ -2,8 +2,15 @@
 	import "./app.css";
 	import { random } from "lodash-es";
 	import Dice from "./lib/Dice.svelte";
+	import Cell from "./lib/Cell.svelte";
 
 	let currentDice = random(1, 6);
+	let cells = Array(9).fill(null);
+
+	function putDice(index: number) {
+		cells[index] = currentDice;
+		currentDice = random(1, 6);
+	}
 
 	console.log({ currentDice });
 </script>
@@ -21,6 +28,7 @@
 	<div
 		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
 	>
+		<!-- AI Board -->
 		<div class="grid h-2/5 grid-cols-3 grid-rows-3 gap-2">
 			<div class="bg-stone-800"></div>
 			<div class="bg-stone-800"></div>
@@ -33,16 +41,11 @@
 			<div class="bg-stone-800"></div>
 		</div>
 
+		<!-- Player Board -->
 		<div class="grid h-2/5 grid-cols-3 grid-rows-3 gap-2">
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
+			{#each cells as cell, index}
+				<Cell dice="{cell}" on:click="{() => putDice(index)}" />
+			{/each}
 		</div>
 	</div>
 
