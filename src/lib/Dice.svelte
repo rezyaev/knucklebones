@@ -2,7 +2,7 @@
 	export let value: number;
 </script>
 
-<main
+<div
 	class="grid h-16 w-16 grid-cols-3 grid-rows-3 gap-px rounded-md bg-zinc-200 p-3"
 >
 	<div
@@ -41,4 +41,4 @@
 		class="h-full w-full rounded-full"
 		class:bg-stone-800="{value === 4 || value === 5 || value === 6}"
 	></div>
-</main>
+</div>
