@@ -8,6 +8,8 @@
 	let cells = Array(9).fill(null);
 
 	function putDice(index: number) {
+		if (cells[index]) return;
+
 		cells[index] = currentDice;
 		currentDice = random(1, 6);
 	}
