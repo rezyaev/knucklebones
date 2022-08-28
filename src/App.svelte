@@ -1,7 +1,8 @@
 <script lang="ts">
 	import "./app.css";
-	import { random, sum, without } from "lodash-es";
+	import { random, without } from "lodash-es";
 	import Dice from "./lib/Dice.svelte";
+	import Board from "./lib/Board.svelte";
 
 	let currentDice = random(1, 6);
 	let cells = Array(9).fill(null);
@@ -11,23 +12,6 @@
 
 		cells[index] = currentDice;
 		currentDice = random(1, 6);
-	}
-
-	function getColumnByCell(index: number) {
-		if (index >= 0 && index < 3) return cells.slice(0, 3);
-		if (index >= 3 && index < 6) return cells.slice(3, 6);
-		if (index >= 6 && index < 9) return cells.slice(6, 9);
-	}
-
-	function calculateCellMultiplier(value: number, index: number) {
-		let column = getColumnByCell(index);
-		if (!column) throw new Error("Column not found");
-
-		if (!value) return 1;
-
-		if (without(column, value).length === 0) return 3;
-		if (without(column, value).length === 1) return 2;
-		return 1;
 	}
 
 	function calculateColumnScore(column: number[]) {
@@ -74,7 +58,6 @@
 	<div
 		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
 	>
-		<!-- AI Board -->
 		<div class="grid h-2/5 grid-cols-3 grid-rows-3 gap-2">
 			<div class="bg-stone-800"></div>
 			<div class="bg-stone-800"></div>
@@ -87,32 +70,11 @@
 			<div class="bg-stone-800"></div>
 		</div>
 
-		<!-- Player Board -->
-		<div
-			class="relative grid h-2/5 grid-flow-col grid-cols-3 grid-rows-3 gap-2"
-		>
-			<div
-				class="absolute -top-10 flex w-full gap-2 text-xl font-bold text-zinc-100"
-			>
-				<p class="flex-1 text-center">{score.col1}</p>
-				<p class="flex-1 text-center">{score.col2}</p>
-				<p class="flex-1 text-center">{score.col3}</p>
-			</div>
-
-			{#each cells as cell, index}
-				<button
-					class="flex items-center justify-center bg-stone-800"
-					on:click="{() => putDice(index)}"
-				>
-					{#if cell}
-						<Dice
-							value="{cell}"
-							multiplier="{calculateCellMultiplier(cell, index)}"
-						/>
-					{/if}
-				</button>
-			{/each}
-		</div>
+		<Board
+			cells="{cells}"
+			score="{score}"
+			on:cellClick="{(event) => putDice(event.detail)}"
+		/>
 	</div>
 
 	<div
