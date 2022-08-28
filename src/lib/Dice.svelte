@@ -1,9 +1,13 @@
 <script lang="ts">
 	export let value: number;
+	export let multiplier: 1 | 2 | 3 = 1;
 </script>
 
 <div
-	class="grid h-16 w-16 grid-cols-3 grid-rows-3 gap-px rounded-md bg-zinc-200 p-3"
+	class="grid h-16 w-16 grid-cols-3 grid-rows-3 gap-px rounded-md  p-3"
+	class:bg-zinc-200="{multiplier === 1}"
+	class:bg-amber-300="{multiplier === 2}"
+	class:bg-sky-500="{multiplier === 3}"
 >
 	<div
 		class="h-full w-full rounded-full"

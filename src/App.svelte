@@ -1,8 +1,7 @@
 <script lang="ts">
 	import "./app.css";
-	import { random, sum } from "lodash-es";
+	import { random, sum, without } from "lodash-es";
 	import Dice from "./lib/Dice.svelte";
-	import Cell from "./lib/Cell.svelte";
 
 	let currentDice = random(1, 6);
 	let cells = Array(9).fill(null);
@@ -14,12 +13,46 @@
 		currentDice = random(1, 6);
 	}
 
-	$: score = {
-		total: sum(cells),
-		col1: sum(cells.slice(0, 3)),
-		col2: sum(cells.slice(3, 6)),
-		col3: sum(cells.slice(6, 9)),
-	};
+	function getColumnByCell(index: number) {
+		if (index >= 0 && index < 3) return cells.slice(0, 3);
+		if (index >= 3 && index < 6) return cells.slice(3, 6);
+		if (index >= 6 && index < 9) return cells.slice(6, 9);
+	}
+
+	function calculateCellMultiplier(value: number, index: number) {
+		let column = getColumnByCell(index);
+		if (!column) throw new Error("Column not found");
+
+		if (!value) return 1;
+
+		if (without(column, value).length === 0) return 3;
+		if (without(column, value).length === 1) return 2;
+		return 1;
+	}
+
+	function calculateColumnScore(column: number[]) {
+		let score = 0;
+		for (const cell of column) {
+			if (without(column, cell).length === 0) {
+				score += cell * 3;
+			} else if (without(column, cell).length === 1) {
+				score += cell * 2;
+			} else {
+				score += cell;
+			}
+		}
+
+		return score;
+	}
+
+	function calculateScore(cells: number[]) {
+		const col1 = calculateColumnScore(cells.slice(0, 3));
+		const col2 = calculateColumnScore(cells.slice(3, 6));
+		const col3 = calculateColumnScore(cells.slice(6, 9));
+		return { col1, col2, col3, total: col1 + col2 + col3 };
+	}
+
+	$: score = calculateScore(cells);
 
 	$: {
 		console.log("[App State Updated]");
@@ -67,7 +100,17 @@
 			</div>
 
 			{#each cells as cell, index}
-				<Cell dice="{cell}" on:click="{() => putDice(index)}" />
+				<button
+					class="flex items-center justify-center bg-stone-800"
+					on:click="{() => putDice(index)}"
+				>
+					{#if cell}
+						<Dice
+							value="{cell}"
+							multiplier="{calculateCellMultiplier(cell, index)}"
+						/>
+					{/if}
+				</button>
 			{/each}
 		</div>
 	</div>
