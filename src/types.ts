@@ -1,6 +1,6 @@
-export type Score = {
-	col1: number;
-	col2: number;
-	col3: number;
-	total: number;
+export type TBoard = (number | null)[];
+
+export type TPlayer = {
+	board: TBoard;
+	currentDice: number;
 };

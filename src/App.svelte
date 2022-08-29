@@ -1,86 +1,93 @@
 <script lang="ts">
 	import "./app.css";
-	import { random, without } from "lodash-es";
+	import { random } from "lodash-es";
 	import Dice from "./lib/Dice.svelte";
 	import Board from "./lib/Board.svelte";
+	import type { TPlayer } from "./types";
+	import { calculateTotalScore } from "./lib/score";
 
-	let currentDice = random(1, 6);
-	let cells = Array(9).fill(null);
+	let currentTurn: "player1" | "ai" = "player1";
+	let player1 = initPlayer();
+	let ai = initPlayer();
+
+	function initPlayer(): TPlayer {
+		return {
+			board: Array(9).fill(null),
+			currentDice: random(1, 6),
+		};
+	}
+
+	function updatePlayer(player: TPlayer, cellIndex: number): TPlayer {
+		if (player.board[cellIndex]) return player;
+
+		const updatedBoard = [
+			...player.board.slice(0, cellIndex),
+			player.currentDice,
+			...player.board.slice(cellIndex + 1),
+		];
+
+		return {
+			board: updatedBoard,
+			currentDice: random(1, 6),
+		};
+	}
 
 	function putDice(index: number) {
-		if (cells[index]) return;
-
-		cells[index] = currentDice;
-		currentDice = random(1, 6);
-	}
-
-	function calculateColumnScore(column: number[]) {
-		let score = 0;
-		for (const cell of column) {
-			if (without(column, cell).length === 0) {
-				score += cell * 3;
-			} else if (without(column, cell).length === 1) {
-				score += cell * 2;
-			} else {
-				score += cell;
-			}
+		if (currentTurn === "player1") {
+			player1 = updatePlayer(player1, index);
+			currentTurn = "ai";
+		} else if (currentTurn === "ai") {
+			ai = updatePlayer(ai, index);
+			currentTurn = "player1";
 		}
-
-		return score;
 	}
-
-	function calculateScore(cells: number[]) {
-		const col1 = calculateColumnScore(cells.slice(0, 3));
-		const col2 = calculateColumnScore(cells.slice(3, 6));
-		const col3 = calculateColumnScore(cells.slice(6, 9));
-		return { col1, col2, col3, total: col1 + col2 + col3 };
-	}
-
-	$: score = calculateScore(cells);
 
 	$: {
-		console.log("[App State Updated]");
-		console.log({ currentDice, score, cells });
+		console.clear();
+		console.log(JSON.stringify({ player1, ai }, null, 4));
 	}
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
 	<div class="flex h-full flex-1 flex-col items-center justify-end pb-36">
 		<h2 class="mb-1 text-2xl font-bold text-zinc-100">Player</h2>
-		<h3 class="mb-6 text-2xl font-bold text-zinc-100">{score.total}</h3>
+		<h3 class="mb-6 text-2xl font-bold text-zinc-100">
+			{calculateTotalScore(player1.board)}
+		</h3>
 		<div
 			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
 		>
-			<Dice value="{currentDice}" />
+			<Dice value="{player1.currentDice}" />
 		</div>
 	</div>
 
 	<div
 		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
 	>
-		<div class="grid h-2/5 grid-cols-3 grid-rows-3 gap-2">
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-			<div class="bg-stone-800"></div>
-		</div>
+		<Board
+			board="{ai.board}"
+			columnScorePosition="bottom"
+			disabled="{currentTurn !== 'ai'}"
+			on:cellClick="{(event) => putDice(event.detail)}"
+		/>
 
 		<Board
-			cells="{cells}"
-			score="{score}"
+			board="{player1.board}"
+			columnScorePosition="top"
+			disabled="{currentTurn !== 'player1'}"
 			on:cellClick="{(event) => putDice(event.detail)}"
 		/>
 	</div>
 
-	<div
-		class="flex h-full flex-1 flex-col items-center justify-start gap-4 pt-36"
-	>
-		<div class="h-24 w-3/4 rounded-xl bg-stone-600"></div>
-		<h2 class="text-2xl font-bold text-zinc-100">AI</h2>
+	<div class="flex h-full flex-1 flex-col items-center justify-start pt-36">
+		<div
+			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
+		>
+			<Dice value="{ai.currentDice}" />
+		</div>
+		<h3 class="mt-6 text-2xl font-bold text-zinc-100">
+			{calculateTotalScore(ai.board)}
+		</h3>
+		<h2 class="mt-1 text-2xl font-bold text-zinc-100">AI</h2>
 	</div>
 </main>
