@@ -5,10 +5,13 @@
 	import Board from "./lib/Board.svelte";
 	import type { TPlayer } from "./types";
 	import { calculateTotalScore } from "./lib/score";
+	import { makeMove } from "./lib/ai";
 
-	let currentTurn: "player1" | "ai" = "player1";
+	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
+
+	let currentTurn: "p1" | "p2" = "p1";
 	let player1 = initPlayer();
-	let ai = initPlayer();
+	let player2 = initPlayer();
 
 	function initPlayer(): TPlayer {
 		return {
@@ -32,19 +35,24 @@
 		};
 	}
 
-	function putDice(index: number) {
-		if (currentTurn === "player1") {
+	function handleCellClick(index: number) {
+		if (gamemode === "PvAI") {
 			player1 = updatePlayer(player1, index);
-			currentTurn = "ai";
-		} else if (currentTurn === "ai") {
-			ai = updatePlayer(ai, index);
-			currentTurn = "player1";
+			player2 = makeMove(player2);
+		} else if (gamemode === "LPvP") {
+			if (currentTurn === "p1") {
+				player1 = updatePlayer(player1, index);
+				currentTurn = "p2";
+			} else if (currentTurn === "p2") {
+				player2 = updatePlayer(player2, index);
+				currentTurn = "p1";
+			}
 		}
 	}
 
 	$: {
 		console.clear();
-		console.log(JSON.stringify({ player1, ai }, null, 4));
+		console.log(JSON.stringify({ player1, ai: player2 }, null, 4));
 	}
 </script>
 
@@ -65,17 +73,17 @@
 		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
 	>
 		<Board
-			board="{ai.board}"
+			board="{player2.board}"
 			columnScorePosition="bottom"
-			disabled="{currentTurn !== 'ai'}"
-			on:cellClick="{(event) => putDice(event.detail)}"
+			disabled="{gamemode === 'PvAI'}"
+			on:cellClick="{(event) => handleCellClick(event.detail)}"
 		/>
 
 		<Board
 			board="{player1.board}"
 			columnScorePosition="top"
-			disabled="{currentTurn !== 'player1'}"
-			on:cellClick="{(event) => putDice(event.detail)}"
+			disabled="{currentTurn !== 'p1'}"
+			on:cellClick="{(event) => handleCellClick(event.detail)}"
 		/>
 	</div>
 
@@ -83,10 +91,10 @@
 		<div
 			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
 		>
-			<Dice value="{ai.currentDice}" />
+			<Dice value="{player2.currentDice}" />
 		</div>
 		<h3 class="mt-6 text-2xl font-bold text-zinc-100">
-			{calculateTotalScore(ai.board)}
+			{calculateTotalScore(player2.board)}
 		</h3>
 		<h2 class="mt-1 text-2xl font-bold text-zinc-100">AI</h2>
 	</div>
