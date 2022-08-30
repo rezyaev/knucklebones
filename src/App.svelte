@@ -37,6 +37,12 @@
 		return updatedColumn;
 	}
 
+	function putDiceRight(column: TColumn, dice: number): TColumn {
+		const updatedColumn = clone(column);
+		updatedColumn[updatedColumn.lastIndexOf(null)] = dice;
+		return updatedColumn;
+	}
+
 	function removeSameDice(column: TColumn, dice: number): TColumn {
 		return column.map((cell) => (cell === dice ? null : cell)) as TColumn;
 	}
@@ -57,7 +63,7 @@
 			board.player2[index] = removeSameDice(board.player2[index], currentDice);
 			currentTurn = "player2";
 		} else if (currentTurn === "player2") {
-			board.player2[index] = putDice(board.player2[index], currentDice);
+			board.player2[index] = putDiceRight(board.player2[index], currentDice);
 			board.player1[index] = removeSameDice(board.player1[index], currentDice);
 			currentTurn = "player1";
 		}
