@@ -1,5 +1,5 @@
 import { without } from "lodash-es";
-import type { TBoard } from "../types";
+import type { TBoard } from "./board";
 
 export function calculateColumnScore(column: TBoard) {
 	let score = 0;

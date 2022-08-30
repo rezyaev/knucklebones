@@ -1,4 +1,4 @@
-export type TBoard = (number | null)[];
+import type { TBoard } from "./lib/board";
 
 export type TPlayer = {
 	board: TBoard;

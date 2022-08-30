@@ -1,11 +1,12 @@
 <script lang="ts">
 	import "./app.css";
-	import { random } from "lodash-es";
+	import { clone, random } from "lodash-es";
 	import Dice from "./lib/Dice.svelte";
 	import Board from "./lib/Board.svelte";
 	import type { TPlayer } from "./types";
 	import { calculateTotalScore } from "./lib/score";
-	import { makeMove } from "./lib/ai";
+	import { createMoveIndex } from "./lib/ai";
+	import { getColumnIndexesByCellIndex, type TBoard } from "./lib/board";
 
 	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
 
@@ -20,39 +21,41 @@
 		};
 	}
 
-	function updatePlayer(player: TPlayer, cellIndex: number): TPlayer {
-		if (player.board[cellIndex]) return player;
+	function putDice(board: TBoard, dice: number, index: number): TBoard {
+		return [...board.slice(0, index), dice, ...board.slice(index + 1)];
+	}
 
-		const updatedBoard = [
-			...player.board.slice(0, cellIndex),
-			player.currentDice,
-			...player.board.slice(cellIndex + 1),
-		];
+	function removeSameDice(board: TBoard, dice: number, index: number): TBoard {
+		const sameColumnIndexes = getColumnIndexesByCellIndex(index);
+		const updatedBoard = clone(board);
 
-		return {
-			board: updatedBoard,
-			currentDice: random(1, 6),
-		};
+		for (const index of sameColumnIndexes) {
+			updatedBoard[index] = board[index] === dice ? null : board[index];
+		}
+
+		return updatedBoard;
 	}
 
 	function handleCellClick(index: number) {
-		if (gamemode === "PvAI") {
-			player1 = updatePlayer(player1, index);
-			player2 = makeMove(player2);
-		} else if (gamemode === "LPvP") {
-			if (currentTurn === "p1") {
-				player1 = updatePlayer(player1, index);
-				currentTurn = "p2";
-			} else if (currentTurn === "p2") {
-				player2 = updatePlayer(player2, index);
-				currentTurn = "p1";
-			}
+		if (currentTurn === "p1") {
+			player1.board = putDice(player1.board, player1.currentDice, index);
+			player2.board = removeSameDice(player2.board, player1.currentDice, index);
+			player1.currentDice = random(1, 6);
+			currentTurn = "p2";
+		} else if (currentTurn === "p2") {
+			player2.board = putDice(player2.board, player2.currentDice, index);
+			player1.board = removeSameDice(player1.board, player2.currentDice, index);
+			player2.currentDice = random(1, 6);
+			currentTurn = "p1";
+		}
+
+		if (gamemode === "PvAI" && currentTurn === "p2") {
+			handleCellClick(createMoveIndex(player2.board));
 		}
 	}
 
 	$: {
-		console.clear();
-		console.log(JSON.stringify({ player1, ai: player2 }, null, 4));
+		console.log("[App State Updated]", { player1, player2 });
 	}
 </script>
 

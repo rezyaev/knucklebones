@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import type { TBoard } from "../types";
 	import Dice from "./Dice.svelte";
 	import { without } from "lodash-es";
 	import { calculateColumnScore } from "./score";
+	import { getColumnByCellIndex, type TBoard } from "./board";
 
 	const dispatch = createEventDispatcher();
 
@@ -11,14 +11,8 @@
 	export let columnScorePosition: "top" | "bottom";
 	export let disabled: boolean;
 
-	function getColumnByCellIndex(index: number) {
-		if (index >= 0 && index < 3) return board.slice(0, 3);
-		if (index >= 3 && index < 6) return board.slice(3, 6);
-		if (index >= 6 && index < 9) return board.slice(6, 9);
-	}
-
 	function calculateCellMultiplier(value: number, index: number) {
-		let column = getColumnByCellIndex(index);
+		let column = getColumnByCellIndex(board, index);
 		if (!column) throw new Error("Column not found");
 
 		if (!value) return 1;
@@ -29,7 +23,7 @@
 	}
 
 	function handleCellClick(index: number) {
-		if (disabled) return;
+		if (disabled || board[index]) return;
 
 		dispatch("cellClick", index);
 	}
