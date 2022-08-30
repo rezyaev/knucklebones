@@ -28,9 +28,9 @@
 
 <div class="relative flex h-2/5 gap-2">
 	<div
-		class="absolute -top-10 flex w-full gap-2 text-center text-xl font-bold text-zinc-100 "
-		class:-top-10="{columnScorePosition === 'top'}"
-		class:-bottom-10="{columnScorePosition === 'bottom'}"
+		class="absolute -top-8 flex w-full gap-2 text-center text-xl font-bold text-zinc-100 "
+		class:-top-8="{columnScorePosition === 'top'}"
+		class:-bottom-8="{columnScorePosition === 'bottom'}"
 	>
 		{#each board as column}
 			<p class="flex-1 text-center">{calculateColumnScore(column)}</p>

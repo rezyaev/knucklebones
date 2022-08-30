@@ -3,22 +3,32 @@
 	import { clone, random } from "lodash-es";
 	import Dice from "./lib/components/Dice.svelte";
 	import Board from "./lib/components/Board.svelte";
-	import type { TColumn, TPlayer } from "./types";
+	import type { TColumn } from "./types";
 	import { calculateTotalScore } from "./lib/utils/score";
 	import { createMoveIndex } from "./lib/utils/ai";
 	import type { TBoard } from "./types";
 
 	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
 
-	let currentTurn: "p1" | "p2" = "p1";
-	let player1 = initPlayer();
-	let player2 = initPlayer();
+	let winner: "player1" | "player2" | null = null;
+	let currentTurn: "player1" | "player2" = "player1";
+	let currentDice = random(1, 6);
+	let board = {
+		player1: Array(3).fill(Array(3).fill(null)) as TBoard,
+		player2: Array(3).fill(Array(3).fill(null)) as TBoard,
+	};
 
-	function initPlayer(): TPlayer {
-		return {
-			board: Array(3).fill(Array(3).fill(null)) as TBoard,
-			currentDice: random(1, 6),
-		};
+	function getPlayerName(player: "player1" | "player2") {
+		if (player === "player1") return "Player 1";
+
+		if (gamemode === "PvAI") return "AI";
+
+		return "Player 2";
+	}
+
+	function getLoser(winner: "player1" | "player2") {
+		if (winner === "player1") return "player2";
+		return "player1";
 	}
 
 	function putDice(column: TColumn, dice: number): TColumn {
@@ -31,65 +41,91 @@
 		return column.map((cell) => (cell === dice ? null : cell)) as TColumn;
 	}
 
-	function handleColumnClick(index: number) {
-		if (currentTurn === "p1") {
-			player1.board[index] = putDice(player1.board[index], player1.currentDice);
-			player2.board[index] = removeSameDice(player2.board[index], player1.currentDice);
-			player1.currentDice = random(1, 6);
-			currentTurn = "p2";
-		} else if (currentTurn === "p2") {
-			player2.board[index] = putDice(player2.board[index], player2.currentDice);
-			player1.board[index] = removeSameDice(player1.board[index], player2.currentDice);
-			player2.currentDice = random(1, 6);
-			currentTurn = "p1";
-		}
-
-		if (gamemode === "PvAI" && currentTurn === "p2") {
-			handleColumnClick(createMoveIndex(player2.board));
+	function checkWinner() {
+		if (board.player1.flat().includes(null) && board.player2.flat().includes(null)) {
+			return null;
+		} else if (calculateTotalScore(board.player1) > calculateTotalScore(board.player2)) {
+			return "player1";
+		} else {
+			return "player2";
 		}
 	}
 
+	function handleColumnClick(index: number) {
+		if (currentTurn === "player1") {
+			board.player1[index] = putDice(board.player1[index], currentDice);
+			board.player2[index] = removeSameDice(board.player2[index], currentDice);
+			currentTurn = "player2";
+		} else if (currentTurn === "player2") {
+			board.player2[index] = putDice(board.player2[index], currentDice);
+			board.player1[index] = removeSameDice(board.player1[index], currentDice);
+			currentTurn = "player1";
+		}
+
+		currentDice = random(1, 6);
+
+		if (gamemode === "PvAI" && currentTurn === "player2") {
+			handleColumnClick(createMoveIndex(board.player2));
+		}
+
+		winner = checkWinner();
+	}
+
 	$: {
-		console.log("[App State Updated]", { player1, player2 });
+		console.log("[App State Updated]", { board });
 	}
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
+	{#if winner}
+		<div class="fixed flex h-full w-full items-center justify-center">
+			<p class="bg-zinc-900 px-24 py-6 text-5xl font-bold text-zinc-100">
+				{getPlayerName(winner)} wins {calculateTotalScore(board[winner])}
+				-
+				{calculateTotalScore(board[getLoser(winner)])}
+			</p>
+		</div>
+	{/if}
+
 	<div class="flex h-full flex-1 flex-col items-center justify-end pb-36">
-		<h2 class="mb-1 text-2xl font-bold text-zinc-100">Player</h2>
+		<h2 class="mb-1 text-2xl font-bold text-zinc-100">{getPlayerName("player1")}</h2>
 		<h3 class="mb-6 text-2xl font-bold text-zinc-100">
-			{calculateTotalScore(player1.board)}
+			{calculateTotalScore(board.player1)}
 		</h3>
 		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
-			<Dice value="{player1.currentDice}" />
+			{#if currentTurn === "player1"}
+				<Dice value="{currentDice}" />
+			{/if}
 		</div>
 	</div>
 
 	<div
-		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 p-12"
+		class="flex h-full flex-1 flex-col justify-between border-x-8 border-red-700 bg-stone-500 px-12 py-3"
 	>
 		<Board
-			board="{player2.board}"
+			board="{board.player2}"
 			columnScorePosition="bottom"
 			disabled="{gamemode === 'PvAI'}"
 			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 
 		<Board
-			board="{player1.board}"
+			board="{board.player1}"
 			columnScorePosition="top"
-			disabled="{currentTurn !== 'p1'}"
+			disabled="{currentTurn !== 'player1'}"
 			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 	</div>
 
 	<div class="flex h-full flex-1 flex-col items-center justify-start pt-36">
 		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
-			<Dice value="{player2.currentDice}" />
+			{#if currentTurn === "player2"}
+				<Dice value="{currentDice}" />
+			{/if}
 		</div>
 		<h3 class="mt-6 text-2xl font-bold text-zinc-100">
-			{calculateTotalScore(player2.board)}
+			{calculateTotalScore(board.player2)}
 		</h3>
-		<h2 class="mt-1 text-2xl font-bold text-zinc-100">AI</h2>
+		<h2 class="mt-1 text-2xl font-bold text-zinc-100">{getPlayerName("player2")}</h2>
 	</div>
 </main>
