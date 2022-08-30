@@ -8,8 +8,7 @@
 	import { createMoveIndex } from "./lib/utils/ai";
 	import type { TBoard } from "./types";
 
-	const gamemode: TGamemode = "PvAI";
-
+	let gamemode: TGamemode;
 	let isMenuOpen = true;
 	let winner: "player1" | "player2" | null = null;
 	let currentTurn: "player1" | "player2" = "player1";
@@ -78,8 +77,8 @@
 		winner = checkWinner();
 	}
 
-	function handleMenuButtonClick(gamemode: TGamemode) {
-		gamemode = gamemode;
+	function handleMenuButtonClick(mode: TGamemode) {
+		gamemode = mode;
 		isMenuOpen = false;
 	}
 
