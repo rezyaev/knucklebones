@@ -3,10 +3,10 @@
 	import { clone, random } from "lodash-es";
 	import Dice from "./lib/components/Dice.svelte";
 	import Board from "./lib/components/Board.svelte";
-	import type { TPlayer } from "./types";
+	import type { TColumn, TPlayer } from "./types";
 	import { calculateTotalScore } from "./lib/utils/score";
 	import { createMoveIndex } from "./lib/utils/ai";
-	import { getColumnIndexesByCellIndex, type TBoard } from "./lib/utils/board";
+	import type { TBoard } from "./types";
 
 	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
 
@@ -16,41 +16,36 @@
 
 	function initPlayer(): TPlayer {
 		return {
-			board: Array(9).fill(null),
+			board: Array(3).fill(Array(3).fill(null)) as TBoard,
 			currentDice: random(1, 6),
 		};
 	}
 
-	function putDice(board: TBoard, dice: number, index: number): TBoard {
-		return [...board.slice(0, index), dice, ...board.slice(index + 1)];
+	function putDice(column: TColumn, dice: number): TColumn {
+		const updatedColumn = clone(column);
+		updatedColumn[updatedColumn.indexOf(null)] = dice;
+		return updatedColumn;
 	}
 
-	function removeSameDice(board: TBoard, dice: number, index: number): TBoard {
-		const sameColumnIndexes = getColumnIndexesByCellIndex(index);
-		const updatedBoard = clone(board);
-
-		for (const index of sameColumnIndexes) {
-			updatedBoard[index] = board[index] === dice ? null : board[index];
-		}
-
-		return updatedBoard;
+	function removeSameDice(column: TColumn, dice: number): TColumn {
+		return column.map((cell) => (cell === dice ? null : cell)) as TColumn;
 	}
 
-	function handleCellClick(index: number) {
+	function handleColumnClick(index: number) {
 		if (currentTurn === "p1") {
-			player1.board = putDice(player1.board, player1.currentDice, index);
-			player2.board = removeSameDice(player2.board, player1.currentDice, index);
+			player1.board[index] = putDice(player1.board[index], player1.currentDice);
+			player2.board[index] = removeSameDice(player2.board[index], player1.currentDice);
 			player1.currentDice = random(1, 6);
 			currentTurn = "p2";
 		} else if (currentTurn === "p2") {
-			player2.board = putDice(player2.board, player2.currentDice, index);
-			player1.board = removeSameDice(player1.board, player2.currentDice, index);
+			player2.board[index] = putDice(player2.board[index], player2.currentDice);
+			player1.board[index] = removeSameDice(player1.board[index], player2.currentDice);
 			player2.currentDice = random(1, 6);
 			currentTurn = "p1";
 		}
 
 		if (gamemode === "PvAI" && currentTurn === "p2") {
-			handleCellClick(createMoveIndex(player2.board));
+			handleColumnClick(createMoveIndex(player2.board));
 		}
 	}
 
@@ -65,9 +60,7 @@
 		<h3 class="mb-6 text-2xl font-bold text-zinc-100">
 			{calculateTotalScore(player1.board)}
 		</h3>
-		<div
-			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
-		>
+		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
 			<Dice value="{player1.currentDice}" />
 		</div>
 	</div>
@@ -79,21 +72,19 @@
 			board="{player2.board}"
 			columnScorePosition="bottom"
 			disabled="{gamemode === 'PvAI'}"
-			on:cellClick="{(event) => handleCellClick(event.detail)}"
+			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 
 		<Board
 			board="{player1.board}"
 			columnScorePosition="top"
 			disabled="{currentTurn !== 'p1'}"
-			on:cellClick="{(event) => handleCellClick(event.detail)}"
+			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 	</div>
 
 	<div class="flex h-full flex-1 flex-col items-center justify-start pt-36">
-		<div
-			class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600"
-		>
+		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
 			<Dice value="{player2.currentDice}" />
 		</div>
 		<h3 class="mt-6 text-2xl font-bold text-zinc-100">

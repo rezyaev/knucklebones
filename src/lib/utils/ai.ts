@@ -1,10 +1,10 @@
 import { random } from "lodash-es";
-import type { TBoard } from "./board";
+import type { TBoard } from "../../types";
 
 export function createMoveIndex(board: TBoard): number {
-	const emptyCellIndexes = board
-		.map((cell, index) => ({ value: cell, index }))
-		.filter((cell) => !cell.value)
-		.map((cell) => cell.index);
-	return emptyCellIndexes[random(0, emptyCellIndexes.length - 1)];
+	const availableColumns = board
+		.map((column, index) => ({ column, index }))
+		.filter(({ column }) => column.includes(null))
+		.map(({ index }) => index);
+	return availableColumns[random(0, availableColumns.length - 1)];
 }

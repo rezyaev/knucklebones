@@ -1,4 +1,5 @@
 {
 	"useTabs": true,
-	"svelteStrictMode": true
+	"svelteStrictMode": true,
+	"printWidth": 100
 }

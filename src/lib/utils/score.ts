@@ -1,7 +1,7 @@
 import { without } from "lodash-es";
-import type { TBoard } from "./board";
+import type { TBoard, TColumn } from "../../types";
 
-export function calculateColumnScore(column: TBoard) {
+export function calculateColumnScore(column: TColumn) {
 	let score = 0;
 	for (const cell of column) {
 		if (!cell) {
@@ -19,9 +19,10 @@ export function calculateColumnScore(column: TBoard) {
 }
 
 export function calculateTotalScore(board: TBoard) {
-	return (
-		calculateColumnScore(board.slice(0, 3)) +
-		calculateColumnScore(board.slice(3, 6)) +
-		calculateColumnScore(board.slice(6, 9))
-	);
+	let score = 0;
+	for (const column of board) {
+		score += calculateColumnScore(column);
+	}
+
+	return score;
 }

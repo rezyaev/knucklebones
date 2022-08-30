@@ -1,5 +1,7 @@
 <script lang="ts">
-	export let value: number;
+	import type { TCell } from "../../types";
+
+	export let value: TCell;
 	export let multiplier: 1 | 2 | 3 = 1;
 </script>
 
