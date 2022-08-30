@@ -1,12 +1,12 @@
 <script lang="ts">
 	import "./app.css";
 	import { clone, random } from "lodash-es";
-	import Dice from "./lib/Dice.svelte";
-	import Board from "./lib/Board.svelte";
+	import Dice from "./lib/components/Dice.svelte";
+	import Board from "./lib/components/Board.svelte";
 	import type { TPlayer } from "./types";
-	import { calculateTotalScore } from "./lib/score";
-	import { createMoveIndex } from "./lib/ai";
-	import { getColumnIndexesByCellIndex, type TBoard } from "./lib/board";
+	import { calculateTotalScore } from "./lib/utils/score";
+	import { createMoveIndex } from "./lib/utils/ai";
+	import { getColumnIndexesByCellIndex, type TBoard } from "./lib/utils/board";
 
 	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
 

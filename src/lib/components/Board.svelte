@@ -2,8 +2,8 @@
 	import { createEventDispatcher } from "svelte";
 	import Dice from "./Dice.svelte";
 	import { without } from "lodash-es";
-	import { calculateColumnScore } from "./score";
-	import { getColumnByCellIndex, type TBoard } from "./board";
+	import { calculateColumnScore } from "../utils/score";
+	import { getColumnByCellIndex, type TBoard } from "../utils/board";
 
 	const dispatch = createEventDispatcher();
 
