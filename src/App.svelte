@@ -3,13 +3,14 @@
 	import { clone, random } from "lodash-es";
 	import Dice from "./lib/components/Dice.svelte";
 	import Board from "./lib/components/Board.svelte";
-	import type { TColumn } from "./types";
+	import type { TColumn, TGamemode } from "./types";
 	import { calculateTotalScore } from "./lib/utils/score";
 	import { createMoveIndex } from "./lib/utils/ai";
 	import type { TBoard } from "./types";
 
-	const gamemode: "PvAI" | "LPvP" | "OPvP" = "PvAI";
+	const gamemode: TGamemode = "PvAI";
 
+	let isMenuOpen = true;
 	let winner: "player1" | "player2" | null = null;
 	let currentTurn: "player1" | "player2" = "player1";
 	let currentDice = random(1, 6);
@@ -77,12 +78,36 @@
 		winner = checkWinner();
 	}
 
+	function handleMenuButtonClick(gamemode: TGamemode) {
+		gamemode = gamemode;
+		isMenuOpen = false;
+	}
+
 	$: {
 		console.log("[App State Updated]", { board });
 	}
 </script>
 
 <main class="flex h-screen w-screen bg-zinc-900">
+	{#if isMenuOpen}
+		<div class="fixed z-50 flex h-full w-full flex-col items-center bg-zinc-900 pt-56">
+			<h1 class="mb-24 text-9xl font-bold text-zinc-100">Knucklebones</h1>
+
+			<button
+				class="w-56 rounded py-4 text-center text-lg text-zinc-400 hover:bg-red-600 hover:text-zinc-100"
+				on:click="{() => handleMenuButtonClick('PvAI')}"
+			>
+				Play Versus AI
+			</button>
+			<button
+				class="w-56 rounded py-4 text-center text-lg text-zinc-400 hover:bg-red-600 hover:text-zinc-100"
+				on:click="{() => handleMenuButtonClick('OPvP')}"
+			>
+				Play Locally
+			</button>
+		</div>
+	{/if}
+
 	{#if winner}
 		<div class="fixed flex h-full w-full items-center justify-center">
 			<p class="bg-zinc-900 px-24 py-6 text-5xl font-bold text-zinc-100">
