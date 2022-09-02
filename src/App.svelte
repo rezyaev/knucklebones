@@ -2,7 +2,7 @@
 	import "./app.css";
 	import Router from "svelte-spa-router";
 	import Home from "./routes/Home.svelte";
-	import Match from "./routes/Match.svelte";
+	import Match from "./routes/match/Match.svelte";
 
 	const routes = {
 		"/": Home,

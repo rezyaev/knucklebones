@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from "svelte";
-	import Dice from "./Dice.svelte";
+	import Dice from "../../routes/match/Dice.svelte";
 	import { without } from "lodash-es";
-	import { calculateColumnScore } from "../utils/score";
+	import { calculateColumnScore } from "./utils";
 	import type { TBoard, TCell, TColumn } from "../../types";
 
 	const dispatch = createEventDispatcher();

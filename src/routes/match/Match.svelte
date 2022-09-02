@@ -1,11 +1,10 @@
 <script lang="ts">
 	import { clone, random } from "lodash-es";
-	import Dice from "../lib/components/Dice.svelte";
-	import Board from "../lib/components/Board.svelte";
-	import type { TColumn, TGamemode } from "../types";
-	import { calculateTotalScore } from "../lib/utils/score";
-	import { createMoveIndex } from "../lib/utils/ai";
-	import type { TBoard } from "../types";
+	import Dice from "./Dice.svelte";
+	import Board from "./Board.svelte";
+	import type { TColumn, TGamemode, TBoard } from "../../types";
+	import { calculateTotalScore } from "./utils";
+	import { createMoveIndex } from "./utils";
 
 	export let params: { gamemode?: TGamemode } = {};
 	if (!params.gamemode) {

@@ -1,6 +1,7 @@
-import { without } from "lodash-es";
+import { random, without } from "lodash-es";
 import type { TBoard, TColumn } from "../../types";
 
+/* === Score === */
 export function calculateColumnScore(column: TColumn) {
 	let score = 0;
 	for (const cell of column) {
@@ -26,3 +27,14 @@ export function calculateTotalScore(board: TBoard) {
 
 	return score;
 }
+/* === /Score === */
+
+/* === AI === */
+export function createMoveIndex(board: TBoard): number {
+	const availableColumns = board
+		.map((column, index) => ({ column, index }))
+		.filter(({ column }) => column.includes(null))
+		.map(({ index }) => index);
+	return availableColumns[random(0, availableColumns.length - 1)];
+}
+/* === /AI === */
