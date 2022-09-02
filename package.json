@@ -27,6 +27,7 @@
 		"vite": "^3.0.7"
 	},
 	"dependencies": {
-		"lodash-es": "^4.17.21"
+		"lodash-es": "^4.17.21",
+		"svelte-spa-router": "^3.3.0"
 	}
 }
