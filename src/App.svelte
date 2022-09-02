@@ -2,13 +2,14 @@
 	import "./app.css";
 	import Router from "svelte-spa-router";
 	import Home from "./routes/Home.svelte";
+	import Match from "./routes/Match.svelte";
 
 	const routes = {
-		// Exact path
 		"/": Home,
+		"/match/:gamemode": Match,
 	};
 </script>
 
-<main>
+<main class="h-screen w-screen">
 	<Router routes="{routes}" />
 </main>
