@@ -28,6 +28,8 @@
 	},
 	"dependencies": {
 		"lodash-es": "^4.17.21",
+		"nanoid": "^4.0.0",
+		"peerjs": "^1.4.7",
 		"svelte-spa-router": "^3.3.0"
 	}
 }

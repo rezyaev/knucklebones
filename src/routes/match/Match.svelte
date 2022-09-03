@@ -5,20 +5,23 @@
 	import type { TColumn, TGamemode, TBoard } from "../../types";
 	import { calculateTotalScore } from "./utils";
 	import { createMoveIndex } from "./utils";
+	import { connection, isTMessage } from "../../lib/stores/connection";
 
-	export let params: { gamemode?: TGamemode } = {};
+	export let params: { gamemode?: TGamemode; turn?: "player1" | "player2" } = {};
 	if (!params.gamemode) {
 		throw new Error("Gamemode hasn't been passed");
 	}
 
 	let gamemode = params.gamemode;
 	let winner: "player1" | "player2" | null = null;
-	let currentTurn: "player1" | "player2" = "player1";
+	let currentTurn: "player1" | "player2" = params.turn ?? "player1";
 	let currentDice = random(1, 6);
 	let board = {
 		player1: Array(3).fill(Array(3).fill(null)) as TBoard,
 		player2: Array(3).fill(Array(3).fill(null)) as TBoard,
 	};
+
+	$connection.on("data", (message) => handleDataConnection(message));
 
 	function getPlayerName(player: "player1" | "player2") {
 		if (player === "player1") return "Player 1";
@@ -63,6 +66,13 @@
 		if (currentTurn === "player1") {
 			board.player1[index] = putDice(board.player1[index], currentDice);
 			board.player2[index] = removeSameDice(board.player2[index], currentDice);
+
+			if (gamemode === "OPvP") {
+				$connection.send({ type: "move", data: { index, dice: currentDice } });
+			} else if (gamemode === "PvAI") {
+				handleColumnClick(createMoveIndex(board.player2));
+			}
+
 			currentTurn = "player2";
 		} else if (currentTurn === "player2") {
 			board.player2[index] = putDiceRight(board.player2[index], currentDice);
@@ -71,16 +81,13 @@
 		}
 
 		currentDice = random(1, 6);
-
-		if (gamemode === "PvAI" && currentTurn === "player2") {
-			handleColumnClick(createMoveIndex(board.player2));
-		}
-
 		winner = checkWinner();
 	}
 
-	$: {
-		console.log("[App State Updated]", { board });
+	function handleDataConnection(message: unknown) {
+		if (!isTMessage(message)) return;
+		currentDice = message.data.dice;
+		handleColumnClick(message.data.index);
 	}
 </script>
 
@@ -127,7 +134,7 @@
 
 	<div class="flex h-full flex-1 flex-col items-center justify-start pt-36">
 		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
-			{#if currentTurn === "player2"}
+			{#if currentTurn === "player2" && gamemode !== "OPvP"}
 				<Dice value="{currentDice}" />
 			{/if}
 		</div>
