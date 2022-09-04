@@ -1,5 +1,6 @@
 <script lang="ts">
 	import Button from "../lib/components/Button.svelte";
+	import DicePatternBackground from "../lib/components/DicePatternBackground.svelte";
 
 	const links = [
 		{ title: "Play Versus AI", href: "#/match/PvAI" },
@@ -8,7 +9,9 @@
 	];
 </script>
 
-<div class="flex h-full w-full flex-col items-center bg-zinc-900 pt-56">
+<div class="flex h-full w-full flex-col items-center pt-56">
+	<DicePatternBackground />
+
 	<h1 class="mb-24 text-9xl font-bold text-zinc-100">Knucklebones</h1>
 
 	<nav class="flex flex-col gap-4">
