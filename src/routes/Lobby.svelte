@@ -19,6 +19,10 @@
 	}
 
 	function handleConnectButtonClick() {
+		state = "connect";
+	}
+
+	function handleConnectFormSubmit() {
 		connection.set(peer.connect(lobbyId));
 		$connection.on("open", () => push("#/match/OPvP/player2"));
 	}
@@ -38,7 +42,7 @@
 			<button
 				class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
 				type="button"
-				on:click="{() => (state = 'connect')}"
+				on:click="{handleConnectButtonClick}"
 			>
 				Connect
 			</button>
@@ -47,19 +51,23 @@
 		<p class="mb-8 text-3xl font-bold">Your Lobby ID</p>
 		<code class="rounded-xl bg-zinc-600 px-12 py-6 font-mono text-5xl font-bold">{id}</code>
 	{:else if state === "connect"}
-		<label for="lobby-id" class="mb-8 text-3xl font-bold">Enter Lobby ID</label>
-		<input
-			type="text"
-			id="lobby-id"
-			bind:value="{lobbyId}"
-			class="mb-12 w-80 rounded-xl bg-zinc-600 px-12 py-6 font-mono text-5xl font-bold"
-		/>
-		<button
-			class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
-			type="button"
-			on:click="{handleConnectButtonClick}"
+		<form
+			class="flex flex-col items-center justify-center"
+			on:submit|preventDefault="{handleConnectFormSubmit}"
 		>
-			Connect
-		</button>
+			<label for="lobby-id" class="mb-8 text-3xl font-bold">Enter Lobby ID</label>
+			<input
+				type="text"
+				id="lobby-id"
+				bind:value="{lobbyId}"
+				class="mb-12 w-80 rounded-xl bg-zinc-600 px-12 py-6 font-mono text-5xl font-bold"
+			/>
+			<button
+				class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
+				type="submit"
+			>
+				Connect
+			</button>
+		</form>
 	{/if}
 </div>
