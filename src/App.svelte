@@ -8,7 +8,7 @@
 	const routes = {
 		"/": Home,
 		"/lobby": Lobby,
-		"/match/:gamemode/:turn": Match,
+		"/match/:gamemode/:turn?": Match,
 	};
 </script>
 

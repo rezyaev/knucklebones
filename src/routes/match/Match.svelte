@@ -21,7 +21,9 @@
 		player2: Array(3).fill(Array(3).fill(null)) as TBoard,
 	};
 
-	$connection.on("data", (message) => handleDataConnection(message));
+	if (gamemode === "OPvP") {
+		$connection.on("data", (message) => handleDataConnection(message));
+	}
 
 	function getPlayerName(player: "player1" | "player2") {
 		if (player === "player1") return "Player 1";
@@ -66,14 +68,14 @@
 		if (currentTurn === "player1") {
 			board.player1[index] = putDice(board.player1[index], currentDice);
 			board.player2[index] = removeSameDice(board.player2[index], currentDice);
+			currentTurn = "player2";
 
 			if (gamemode === "OPvP") {
 				$connection.send({ type: "move", data: { index, dice: currentDice } });
 			} else if (gamemode === "PvAI") {
+				currentDice = random(1, 6);
 				handleColumnClick(createMoveIndex(board.player2));
 			}
-
-			currentTurn = "player2";
 		} else if (currentTurn === "player2") {
 			board.player2[index] = putDiceRight(board.player2[index], currentDice);
 			board.player1[index] = removeSameDice(board.player1[index], currentDice);
