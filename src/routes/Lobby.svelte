@@ -3,6 +3,7 @@
 	import { nanoid } from "nanoid";
 	import { connection } from "../lib/stores/connection";
 	import { push } from "svelte-spa-router";
+	import Button from "../lib/components/Button.svelte";
 
 	const id = nanoid(8);
 	const peer = new Peer(id);
@@ -32,20 +33,8 @@
 	{#if state === "wait"}
 		<h1 class="mb-24 text-5xl font-bold">Lobby</h1>
 		<div class="flex items-center justify-center gap-16">
-			<button
-				class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
-				type="button"
-				on:click="{handleCreateButtonClick}"
-			>
-				Create
-			</button>
-			<button
-				class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
-				type="button"
-				on:click="{handleConnectButtonClick}"
-			>
-				Connect
-			</button>
+			<Button type="button" on:click="{handleCreateButtonClick}">Create</Button>
+			<Button type="button" on:click="{handleConnectButtonClick}">Connect</Button>
 		</div>
 	{:else if state === "create"}
 		<p class="mb-8 text-3xl font-bold">Your Lobby ID</p>
@@ -62,12 +51,7 @@
 				bind:value="{lobbyId}"
 				class="mb-12 w-80 rounded-xl bg-zinc-600 px-12 py-6 font-mono text-5xl font-bold"
 			/>
-			<button
-				class="w-56 rounded bg-zinc-600 py-4 text-center text-lg text-zinc-300 hover:bg-red-600 hover:text-zinc-100"
-				type="submit"
-			>
-				Connect
-			</button>
+			<Button type="submit">Connect</Button>
 		</form>
 	{/if}
 </div>
