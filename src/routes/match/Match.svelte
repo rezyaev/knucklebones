@@ -6,6 +6,7 @@
 	import { calculateTotalScore } from "./utils";
 	import { createMoveIndex } from "./utils";
 	import { connection, isTMessage } from "../../lib/stores/connection";
+	import PlayerInfo from "./PlayerInfo.svelte";
 
 	export let params: { gamemode?: TGamemode; turn?: "player1" | "player2" } = {};
 	if (!params.gamemode) {
@@ -73,8 +74,10 @@
 			if (gamemode === "OPvP") {
 				$connection.send({ type: "move", data: { index, dice: currentDice } });
 			} else if (gamemode === "PvAI") {
-				currentDice = random(1, 6);
-				handleColumnClick(createMoveIndex(board.player2));
+				setTimeout(() => {
+					currentDice = random(1, 6);
+					handleColumnClick(createMoveIndex(board.player2));
+				}, 100);
 			}
 		} else if (currentTurn === "player2") {
 			board.player2[index] = putDiceRight(board.player2[index], currentDice);
@@ -104,16 +107,12 @@
 		</div>
 	{/if}
 
-	<div class="flex h-full flex-1 flex-col items-center justify-end pb-36">
-		<h2 class="mb-1 text-2xl font-bold text-zinc-100">{getPlayerName("player1")}</h2>
-		<h3 class="mb-6 text-2xl font-bold text-zinc-100">
-			{calculateTotalScore(board.player1)}
-		</h3>
-		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
-			{#if currentTurn === "player1"}
-				<Dice value="{currentDice}" />
-			{/if}
-		</div>
+	<div class="flex h-full flex-1 flex-col justify-end pb-36">
+		<PlayerInfo
+			name="{getPlayerName('player1')}"
+			score="{calculateTotalScore(board.player1)}"
+			dice="{currentTurn === 'player1' ? currentDice : null}"
+		/>
 	</div>
 
 	<div
