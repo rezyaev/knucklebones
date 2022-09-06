@@ -77,7 +77,7 @@
 				setTimeout(() => {
 					currentDice = random(1, 6);
 					handleColumnClick(createMoveIndex(board.player2));
-				}, 100);
+				}, 1000);
 			}
 		} else if (currentTurn === "player2") {
 			board.player2[index] = putDiceRight(board.player2[index], currentDice);
@@ -107,7 +107,7 @@
 		</div>
 	{/if}
 
-	<div class="flex h-full flex-1 flex-col justify-end pb-36">
+	<div class="flex h-full flex-1 flex-col justify-end pb-32">
 		<PlayerInfo
 			name="{getPlayerName('player1')}"
 			score="{calculateTotalScore(board.player1)}"
@@ -133,15 +133,12 @@
 		/>
 	</div>
 
-	<div class="flex h-full flex-1 flex-col items-center justify-start pt-36">
-		<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
-			{#if currentTurn === "player2" && gamemode !== "OPvP"}
-				<Dice value="{currentDice}" />
-			{/if}
-		</div>
-		<h3 class="mt-6 text-2xl font-bold text-zinc-100">
-			{calculateTotalScore(board.player2)}
-		</h3>
-		<h2 class="mt-1 text-2xl font-bold text-zinc-100">{getPlayerName("player2")}</h2>
+	<div class="flex h-full flex-1 flex-col justify-start pt-32">
+		<PlayerInfo
+			name="{getPlayerName('player2')}"
+			score="{calculateTotalScore(board.player2)}"
+			dice="{currentTurn === 'player2' ? currentDice : null}"
+			reverse="{true}"
+		/>
 	</div>
 </div>

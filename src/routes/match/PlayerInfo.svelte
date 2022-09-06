@@ -8,6 +8,7 @@
 	export let name: string;
 	export let score: number;
 	export let dice: number | null = null;
+	export let reverse: boolean = false;
 
 	let displayedDice: number;
 
@@ -38,12 +39,12 @@
 	}
 </script>
 
-<div class="flex flex-col items-center justify-end">
-	<h2 class="mb-1 text-2xl font-bold text-zinc-100">{name}</h2>
-	<h3 class="mb-6 text-2xl font-bold text-zinc-100">{score}</h3>
-	<div class="flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
+<div class="flex flex-col items-center justify-end" class:flex-col-reverse="{reverse}">
+	<h2 class="text-2xl font-bold text-zinc-100">{name}</h2>
+	<h3 class="my-0.5 text-2xl font-bold text-zinc-100">{score}</h3>
+	<div class="my-4 flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
 		{#if dice}
-			<div in:fly="{{ duration: 1000, x: -100, opacity: 1 }}">
+			<div in:fly="{{ duration: 1000, x: reverse ? 100 : -100, opacity: 1 }}">
 				<div in:fly="{{ duration: 1000, y: -10, opacity: 1, easing: bounceOut }}">
 					<Dice value="{displayedDice}" />
 				</div>
