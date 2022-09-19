@@ -137,7 +137,7 @@
 		<PlayerInfo
 			name="{getPlayerName('player2')}"
 			score="{calculateTotalScore(board.player2)}"
-			dice="{currentTurn === 'player2' ? currentDice : null}"
+			dice="{currentTurn === 'player2' && gamemode !== 'OPvP' ? currentDice : null}"
 			reverse="{true}"
 		/>
 	</div>
