@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { clone, random } from "lodash-es";
-	import Dice from "./Dice.svelte";
 	import Board from "./Board.svelte";
 	import type { TColumn, TGamemode, TBoard } from "../../types";
 	import { calculateTotalScore } from "./utils";

@@ -2,10 +2,11 @@
 	import { createEventDispatcher } from "svelte";
 	import Dice from "../../routes/match/Dice.svelte";
 	import { without } from "lodash-es";
-	import { calculateColumnScore } from "./utils";
+	import { calculateColumnScore, diceCrossfade, diceCrossfadeKey } from "./utils";
 	import type { TBoard, TCell, TColumn } from "../../types";
 
 	const dispatch = createEventDispatcher();
+	const [send, receive] = diceCrossfade;
 
 	export let board: TBoard;
 	export let columnScorePosition: "top" | "bottom";
@@ -45,7 +46,9 @@
 			{#each column as cell}
 				<div class="flex flex-1 items-center justify-center bg-stone-800">
 					{#if cell}
-						<Dice value="{cell}" multiplier="{calculateCellMultiplier(column, cell)}" />
+						<div in:receive="{{ key: diceCrossfadeKey }}">
+							<Dice value="{cell}" multiplier="{calculateCellMultiplier(column, cell)}" />
+						</div>
 					{/if}
 				</div>
 			{/each}

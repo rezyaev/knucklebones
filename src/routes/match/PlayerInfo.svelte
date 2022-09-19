@@ -2,8 +2,10 @@
 	import { random } from "lodash-es";
 	import { fly } from "svelte/transition";
 	import { bounceOut } from "svelte/easing";
-
 	import Dice from "./Dice.svelte";
+	import { diceCrossfade, diceCrossfadeKey } from "./utils";
+
+	const [send, receive] = diceCrossfade;
 
 	export let name: string;
 	export let score: number;
@@ -44,9 +46,12 @@
 	<h3 class="my-0.5 text-2xl font-bold text-zinc-100">{score}</h3>
 	<div class="my-4 flex h-24 w-3/4 items-center justify-center rounded-xl bg-stone-600">
 		{#if dice}
-			<div in:fly="{{ duration: 1000, x: reverse ? 100 : -100, opacity: 1 }}">
+			<div
+				in:fly="{{ duration: 1000, x: reverse ? 100 : -100, opacity: 1 }}"
+				out:send="{{ key: diceCrossfadeKey }}"
+			>
 				<div in:fly="{{ duration: 1000, y: -10, opacity: 1, easing: bounceOut }}">
-					<Dice value="{displayedDice}" />
+					<Dice value="{dice}" />
 				</div>
 			</div>
 		{/if}

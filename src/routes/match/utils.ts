@@ -1,4 +1,7 @@
 import { random, without } from "lodash-es";
+import { nanoid } from "nanoid";
+import { circOut } from "svelte/easing";
+import { crossfade } from "svelte/transition";
 import type { TBoard, TColumn } from "../../types";
 
 /* === Score === */
@@ -38,3 +41,8 @@ export function createMoveIndex(board: TBoard): number {
 	return availableColumns[random(0, availableColumns.length - 1)];
 }
 /* === /AI === */
+
+/* === ANIMATION === */
+export const diceCrossfadeKey = nanoid();
+export const diceCrossfade = crossfade({ duration: 250, easing: circOut });
+/* === /ANIMATION === */
