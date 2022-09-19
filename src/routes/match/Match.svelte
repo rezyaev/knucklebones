@@ -2,10 +2,11 @@
 	import { clone, random } from "lodash-es";
 	import Board from "./Board.svelte";
 	import type { TColumn, TGamemode, TBoard } from "../../types";
-	import { calculateTotalScore } from "./utils";
+	import { calculateTotalScore, getPlayerName } from "./utils";
 	import { createMoveIndex } from "./utils";
 	import { connection, isTMessage } from "../../lib/stores/connection";
 	import PlayerInfo from "./PlayerInfo.svelte";
+	import GameOver from "./GameOver.svelte";
 
 	export let params: { gamemode?: TGamemode; turn?: "player1" | "player2" } = {};
 	if (!params.gamemode) {
@@ -22,20 +23,16 @@
 	};
 
 	if (gamemode === "OPvP") {
-		$connection.on("data", (message) => handleDataConnection(message));
-	}
+		$connection.on("data", (message) => {
+			if (!isTMessage(message)) return;
 
-	function getPlayerName(player: "player1" | "player2") {
-		if (player === "player1") return "Player 1";
-
-		if (gamemode === "PvAI") return "AI";
-
-		return "Player 2";
-	}
-
-	function getLoser(winner: "player1" | "player2") {
-		if (winner === "player1") return "player2";
-		return "player1";
+			if (message.type === "move" && message.data) {
+				currentDice = message.data.dice;
+				handleColumnClick(message.data.index);
+			} else if (message.type === "restart") {
+				handleRestartClick({ disableMessage: true });
+			}
+		});
 	}
 
 	function putDice(column: TColumn, dice: number): TColumn {
@@ -65,6 +62,8 @@
 	}
 
 	function handleColumnClick(index: number) {
+		if (winner) return;
+
 		if (currentTurn === "player1") {
 			board.player1[index] = putDice(board.player1[index], currentDice);
 			board.player2[index] = removeSameDice(board.player2[index], currentDice);
@@ -88,27 +87,29 @@
 		winner = checkWinner();
 	}
 
-	function handleDataConnection(message: unknown) {
-		if (!isTMessage(message)) return;
-		currentDice = message.data.dice;
-		handleColumnClick(message.data.index);
+	function handleRestartClick({ disableMessage }: { disableMessage?: boolean } = {}) {
+		if (gamemode === "OPvP" && !disableMessage) {
+			$connection.send({ type: "restart" });
+		}
+
+		winner = null;
+		currentTurn = params.turn ?? "player1";
+		currentDice = random(1, 6);
+		board = {
+			player1: Array(3).fill(Array(3).fill(null)) as TBoard,
+			player2: Array(3).fill(Array(3).fill(null)) as TBoard,
+		};
 	}
 </script>
 
 <div class="flex h-full w-full bg-zinc-900">
 	{#if winner}
-		<div class="fixed flex h-full w-full items-center justify-center">
-			<p class="bg-zinc-900 px-24 py-6 text-5xl font-bold text-zinc-100">
-				{getPlayerName(winner)} wins {calculateTotalScore(board[winner])}
-				-
-				{calculateTotalScore(board[getLoser(winner)])}
-			</p>
-		</div>
+		<GameOver winner="{winner}" board="{board}" on:restartClick="{() => handleRestartClick()}" />
 	{/if}
 
 	<div class="flex h-full flex-1 flex-col justify-end pb-32">
 		<PlayerInfo
-			name="{getPlayerName('player1')}"
+			name="{getPlayerName('player1', gamemode)}"
 			score="{calculateTotalScore(board.player1)}"
 			dice="{currentTurn === 'player1' ? currentDice : null}"
 		/>
@@ -120,14 +121,14 @@
 		<Board
 			board="{board.player2}"
 			columnScorePosition="bottom"
-			disabled="{gamemode === 'PvAI'}"
+			disabled="{winner !== null && gamemode !== 'LPvP'}"
 			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 
 		<Board
 			board="{board.player1}"
 			columnScorePosition="top"
-			disabled="{currentTurn !== 'player1'}"
+			disabled="{winner !== null && currentTurn !== 'player1'}"
 			on:columnClick="{(event) => handleColumnClick(event.detail)}"
 		/>
 	</div>

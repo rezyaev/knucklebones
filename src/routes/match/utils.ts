@@ -2,7 +2,17 @@ import { random, without } from "lodash-es";
 import { nanoid } from "nanoid";
 import { circOut } from "svelte/easing";
 import { crossfade } from "svelte/transition";
-import type { TBoard, TColumn } from "../../types";
+import type { TBoard, TColumn, TGamemode } from "../../types";
+
+/* === Formatting === */
+export function getPlayerName(player: "player1" | "player2", gamemode?: TGamemode) {
+	if (player === "player1") return "Player 1";
+
+	if (gamemode === "PvAI") return "AI";
+
+	return "Player 2";
+}
+/* === /Formatting === */
 
 /* === Score === */
 export function calculateColumnScore(column: TColumn) {
