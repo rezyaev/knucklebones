@@ -72,10 +72,11 @@
 			if (gamemode === "OPvP") {
 				$connection.send({ type: "move", data: { index, dice: currentDice } });
 			} else if (gamemode === "PvAI") {
+				currentDice = random(1, 6);
 				setTimeout(() => {
-					currentDice = random(1, 6);
 					handleColumnClick(createMoveIndex(board.player2));
 				}, 1000);
+				return;
 			}
 		} else if (currentTurn === "player2") {
 			board.player2[index] = putDiceRight(board.player2[index], currentDice);
