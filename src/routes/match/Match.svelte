@@ -72,6 +72,7 @@
 			if (gamemode === "OPvP") {
 				$connection.send({ type: "move", data: { index, dice: currentDice } });
 			} else if (gamemode === "PvAI") {
+				winner = checkWinner();
 				currentDice = random(1, 6);
 				setTimeout(() => {
 					handleColumnClick(createMoveIndex(board.player2));
@@ -84,8 +85,8 @@
 			currentTurn = "player1";
 		}
 
-		currentDice = random(1, 6);
 		winner = checkWinner();
+		currentDice = random(1, 6);
 	}
 
 	function handleRestartClick({ disableMessage }: { disableMessage?: boolean } = {}) {
