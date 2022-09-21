@@ -51,7 +51,7 @@
 				out:send="{{ key: diceCrossfadeKey }}"
 			>
 				<div in:fly="{{ duration: 1000, y: -10, opacity: 1, easing: bounceOut }}">
-					<Dice value="{dice}" />
+					<Dice value="{displayedDice}" />
 				</div>
 			</div>
 		{/if}
